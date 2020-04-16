@@ -150,8 +150,8 @@ def get_review_request_closed_body(payload: Dict[str, Any]) -> str:
 
     return message.format(**kwargs).strip()
 
-def get_review_request_repo_title(payload: Dict[str, Any]) -> str:
-    return payload['review_request']['links']['repository']['title']
+def get_review_request_topic(payload: Dict[str, Any]) -> str:
+    return payload['review_request']['summary']
 
 RB_MESSAGE_FUNCTIONS = {
     'review_request_published': get_review_request_published_body,
@@ -174,7 +174,7 @@ def api_reviewboard_webhook(
     body_function = RB_MESSAGE_FUNCTIONS.get(event_type)
     if body_function is not None:
         body = body_function(payload)
-        topic = get_review_request_repo_title(payload)
+        topic = get_review_request_topic(payload)
         check_send_webhook_message(request, user_profile, topic, body)
     else:
         raise UnexpectedWebhookEventType('ReviewBoard', event_type)
